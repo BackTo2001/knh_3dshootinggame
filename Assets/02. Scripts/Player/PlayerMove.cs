@@ -2,6 +2,22 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+    //[SerializeField] private PlayerDataSO _playerDataSO; // 플레이어 데이터 스크립터블 오브젝트
+    //private PlayerStat _playerStat;
+    //private CharacterController _characterController;   // 캐릭터 컨트롤러
+    //private Vector3 _moveDirection = Vector3.zero;      // 이동 방향
+
+    //private void Awake()
+    //{
+    //    _characterController = GetComponent<CharacterController>();
+    //    _playerStat = new PlayerStat(_playerDataSO); // 플레이어 스탯 초기화
+    //}
+
+    //private void Update()
+    //{
+
+    //}
+
     // 목표 : wasd를 누르면 캐릭터를 카메라 방향에 맞게 이동시키고 싶다.
     // 필요 속성
     // 이동
@@ -10,6 +26,7 @@ public class PlayerMove : MonoBehaviour
 
     // 스태미나
     public float Stamina { get; private set; }
+    public float MaxStamina = 100f;                     // 최대 스태미나
 
     // 점프 변수
     public int _currentJumpCount = 0;     // 현재 점프 횟수
@@ -19,20 +36,25 @@ public class PlayerMove : MonoBehaviour
 
     // 중력 변수
     private const float GRAVITY = -9.8f;  // 중력
+    private const float GroundedGravity = 2f; // 땅에 닿았을 때의 중력
     private float _yVelocity = 0f;        // 중력 가속도
+
+    // 스프린트 변수
+    public float SprintSpeed = 12f;       // 스프린트 속도
+    public float SprintStaminaCost = 20f; // 스프린트 소모 스태미나
+    public float SprintStaminaRecover = 10f; // 스프린트 회복 스태미나
 
     // 구르기 변수
     public float RollSpeed = 15f;         // 구르기 속도
+    public float RollStaminaCost = 30f;   // 구르기 소모 스태미나
     public float RollDuration = 0.5f;     // 구르기 지속 시간
     private bool _isRolling = false;      // 구르기 여부
     private float _rollTimer = 0f;        // 구르기 타이머
 
     // 벽타기 변수
     public float ClimbSpeed = 5f;         // 벽타기 속도
-    public float ClimbStaminaCost = 5f;   // 벽타기 소모 스태미나
+    public float ClimbStaminaCost = 10f;   // 벽타기 소모 스태미나
     private bool _isClimbing = false;     // 벽타기 여부
-
-
 
     // 캐릭터 컨트롤러
     private CharacterController _characterController;
@@ -42,7 +64,7 @@ public class PlayerMove : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
 
         // 스태미나 초기화
-        Stamina = 100f;
+        Stamina = MaxStamina;
     }
 
     private void Update()
@@ -106,7 +128,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (_characterController.isGrounded && _yVelocity < 0)
         {
-            _yVelocity = -2f;
+            _yVelocity = -GroundedGravity;
         }
         else
         {
@@ -122,8 +144,8 @@ public class PlayerMove : MonoBehaviour
             if (Stamina > 0)
             {
                 // 스태미나가 0보다 클 때만 소모
-                MoveSpeed = 12f;
-                Stamina -= 2f * Time.deltaTime;
+                MoveSpeed = SprintSpeed;
+                Stamina -= SprintStaminaCost * Time.deltaTime;
             }
             else
             {
@@ -134,7 +156,7 @@ public class PlayerMove : MonoBehaviour
         {
             MoveSpeed = 7f;
             // 스태미나 회복
-            Stamina += 1f * Time.deltaTime;
+            Stamina += SprintStaminaRecover * Time.deltaTime;
             if (Stamina > 100f) Stamina = 100f;
         }
     }
@@ -142,11 +164,11 @@ public class PlayerMove : MonoBehaviour
     // 6. 구르기 함수
     public void Roll()
     {
-        if (Input.GetKeyDown(KeyCode.E) && !_isRolling && Stamina >= 10f)
+        if (Input.GetKeyDown(KeyCode.E) && !_isRolling && Stamina >= RollStaminaCost)
         {
             _isRolling = true;
             _rollTimer = RollDuration;
-            Stamina -= 10f;
+            Stamina -= RollStaminaCost;
         }
         if (_isRolling)
         {
@@ -167,7 +189,7 @@ public class PlayerMove : MonoBehaviour
     public void Climb()
     {
         if ((_characterController.collisionFlags & CollisionFlags.Sides) != 0
-            && !_characterController.isGrounded
+            && Input.GetKey(KeyCode.W)
             && Stamina > 0)
         {
             _isClimbing = true;
