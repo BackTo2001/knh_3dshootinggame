@@ -12,17 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63edaaa716b016646bfb466502b42ed1, type: 3}
   m_Name: PlayerDataSO
   m_EditorClassIdentifier: 
+  maxHealth: 100
   maxStamina: 100
   moveSpeed: 7
-  maxJumpCount: 2
-  jumpPower: 5
   sprintSpeed: 12
-  sprintStaminaCost: 2
-  sprintStaminaRecover: 1
+  sprintStaminaCost: 20
+  sprintStaminaRecover: 10
+  maxJumpCount: 2
+  jumpPower: 10
   rollSpeed: 15
-  rollStaminaCost: 10
+  rollStaminaCost: 30
   rollDuration: 0.5
   climbSpeed: 5
-  climbStaminaCost: 5
+  climbStaminaCost: 10
   gravity: -9.8
   groundedGravity: 2
