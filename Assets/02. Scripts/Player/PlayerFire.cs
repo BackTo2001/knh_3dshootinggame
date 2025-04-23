@@ -179,13 +179,14 @@ public class PlayerFire : MonoBehaviour
     {
         _isReloading = true;
         _reloadProgress = 0f;
-        UIManager.Instance.ShowReload(true);
+        //UIManager.Instance.ShowReload(true);
+        UIManager.Instance.ShowReloadText(true); // 텍스트 표시
     }
-
     private void ContinueReload()
     {
         _reloadProgress += Time.deltaTime / ReloadTime;
-        UIManager.Instance.UpdateReload(_reloadProgress);
+        //UIManager.Instance.UpdateReload(_reloadProgress);
+        UIManager.Instance.UpdateReloadTextWithColor(_reloadProgress); // 텍스트와 색상 업데이트
 
         if (_reloadProgress >= 1f)
         {
@@ -196,15 +197,17 @@ public class PlayerFire : MonoBehaviour
     {
         _isReloading = false;
         _currentBulletCount = MaxBulletCount;
-        UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
-        UIManager.Instance.ShowReload(false);
+        //UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
+        //UIManager.Instance.ShowReload(false);
+        UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount); // UI 업데이트
+        UIManager.Instance.ShowReloadText(false); // 텍스트 숨기기
     }
-
     private void CancleReload()
     {
         _isReloading = false;
         _reloadProgress = 0f;
-        UIManager.Instance.ShowReload(false);
+        //UIManager.Instance.ShowReload(false);
+        UIManager.Instance.ShowReloadText(false); // 텍스트 숨기기
     }
 
 

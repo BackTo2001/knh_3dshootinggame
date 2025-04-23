@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
     public Slider ReloadSlider;
     public TextMeshProUGUI BombText;
     public TextMeshProUGUI BulletText;
+    public TextMeshProUGUI ReloadText;
 
 
     private void Start()
@@ -98,5 +99,31 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UpdateReloadTextWithColor(float progress)
+    {
+        if (ReloadText != null)
+        {
+            // 진행 상태를 퍼센트로 변환
+            int percentage = Mathf.RoundToInt(progress * 100);
 
+            // 텍스트 업데이트
+            ReloadText.text = $"재장전 중... {percentage}%";
+
+            // 색상 업데이트 (흰색에서 빨간색으로)
+            Color startColor = Color.white;
+            Color endColor = Color.red;
+            ReloadText.color = Color.Lerp(startColor, endColor, progress);
+        }
+    }
+    public void ShowReloadText(bool show)
+    {
+        if (ReloadText != null)
+        {
+            ReloadText.gameObject.SetActive(show); // 텍스트 활성화/비활성화
+            if (!show)
+            {
+                ReloadText.text = ""; // 비활성화 시 텍스트 초기화
+            }
+        }
+    }
 }
