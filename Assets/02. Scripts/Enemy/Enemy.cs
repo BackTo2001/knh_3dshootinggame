@@ -12,10 +12,11 @@ public class Enemy : MonoBehaviour
     {
         Idle = 0,
         Trace = 1,
-        Return = 2,
-        Attack = 3,
-        Damaged = 4,
-        Die = 5
+        Patrol = 2,
+        Return = 3,
+        Attack = 4,
+        Damaged = 5,
+        Die = 6
     }
 
     // 2. 현재 상태를 지정
@@ -32,7 +33,13 @@ public class Enemy : MonoBehaviour
     public float _attackTimer = 0f;                     // 공격 타이머
     public int Health = 100;                            // 체력   
     public float DamagedTime = 0.5f;                    // 경직 시간
-    public float DieTime = 1f;                    // 사망 시간
+    public float DieTime = 1f;                          // 사망 시간
+    public Transform[] PatrolPoints;                    // 순찰 지점 배열
+    private int _currentPatrolIndex = 0;                // 현재 순찰 지점 인덱스
+    public float IdleToPatrolTime = 5f;                 // Idle 상태에서 Patrol 상태로 전이되는 시간
+    private float _idleTimer = 0f;                      // Idle 상태에서 대기하는 타이머
+    private float knockbackDuration = 0.5f;             // 넉백 지속 시간
+    private float elapsedTime = 0f;                     // 경과 시간
 
     private void Start()
     {
@@ -48,6 +55,12 @@ public class Enemy : MonoBehaviour
             case EnemyState.Idle:
                 {
                     Idle();
+                    break;
+                }
+
+            case EnemyState.Patrol:
+                {
+                    Patrol();
                     break;
                 }
 
@@ -85,13 +98,44 @@ public class Enemy : MonoBehaviour
             Debug.Log($"상태전환 : {CurrentState} -> Damaged");
             CurrentState = EnemyState.Die; // 상태 전이
             StartCoroutine(Die_Coroutine()); // 코루틴 시작
+            return;
         }
 
         Debug.Log($"상태전환 : {CurrentState} -> Damaged");
 
+        // 넉백 적용
+        ApplyKnockback(damage);
+
         CurrentState = EnemyState.Damaged; // 상태 전이
 
         StartCoroutine(Damaged_Coroutine()); // 코루틴 시작
+    }
+
+    private void ApplyKnockback(Damage damage)
+    {
+        // 넉백 방향 계산 (공격 방향의 반대)
+        Vector3 knockbackDir = (transform.position - damage.From.transform.position).normalized;
+
+        // 넉백 파워 적용
+        Vector3 knockbackPower = knockbackDir * damage.KnockBackPower;
+
+        // Debug: 넉백 방향과 크기 확인
+        Debug.Log($"넉백 방향: {knockbackDir}, 넉백 파워: {knockbackPower}");
+
+        // 넉백 적용
+        StartCoroutine(ApplyKnockBackCoroutine(knockbackPower));
+    }
+
+    private IEnumerator ApplyKnockBackCoroutine(Vector3 _knockbackPower)
+    {
+        elapsedTime = 0f; // 경과 시간 초기화
+        while (elapsedTime < knockbackDuration)
+        {
+            // 캐릭터 컨트롤러를 사용하여 넉백 적용
+            _characterController.Move(_knockbackPower * Time.deltaTime);
+            elapsedTime += Time.deltaTime; // 경과 시간 증가
+            yield return null; // 다음 프레임까지 대기
+        }
     }
 
 
@@ -99,15 +143,45 @@ public class Enemy : MonoBehaviour
     private void Idle()
     {
         // 행동 : 가만히 있는다.
+        _idleTimer += Time.deltaTime; // 타이머 증가
 
-        // 필요 속성
-        // 1. 플레이어(위치)
-        // 2. FindDistance(거리)
-
+        // 전이 : Idle 상태가 지속되면 -> Patrol
+        if (_idleTimer >= IdleToPatrolTime)
+        {
+            Debug.Log("상태전환 : Idle -> Patrol");
+            _idleTimer = 0f; // 타이머 초기화
+            CurrentState = EnemyState.Patrol;
+            return;
+        }
+        // 전이 : 플레이어와 가까워 지면 -> Trace
         if (Vector3.Distance(transform.position, _player.transform.position) < FindDistance)
         {
             Debug.Log("상태전환 : Idle -> Trace");
+            _idleTimer = 0f; // 타이머 초기화
             CurrentState = EnemyState.Trace;
+        }
+    }
+
+    private void Patrol()
+    {
+        // 전이 : 순찰 중 플레이어와 가까워지면 -> Trace
+        if (Vector3.Distance(transform.position, _player.transform.position) < FindDistance)
+        {
+            Debug.Log("상태전환 : Patrol -> Trace");
+            CurrentState = EnemyState.Trace;
+            return;
+        }
+
+        // 행동 : 순찰 지점으로 이동한다.
+        Transform targetPoint = PatrolPoints[_currentPatrolIndex];
+        Vector3 dir = (targetPoint.position - transform.position).normalized;
+        _characterController.Move(dir * MoveSpeed * Time.deltaTime);
+
+        // 행동2 : 순찰 지점에 도착하면 -> 다음 지점으로 이동
+        float distanceToTarget = Vector3.Distance(transform.position, targetPoint.position);
+        if (distanceToTarget <= 0.1f) // 도달 조건 수정
+        {
+            _currentPatrolIndex = (_currentPatrolIndex + 1) % PatrolPoints.Length; // 다음 지점으로 이동
         }
     }
 
