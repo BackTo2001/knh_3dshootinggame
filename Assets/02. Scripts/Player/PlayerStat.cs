@@ -12,7 +12,6 @@ public class PlayerStat : MonoBehaviour
     public float YVelocity { get; set; }
     public Vector3 MoveDirection { get; set; }
 
-
     public int CurrentJumpCount { get; private set; }
     public bool IsJumping { get; set; }
     public bool IsSprinting { get; set; }

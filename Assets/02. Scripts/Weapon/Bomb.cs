@@ -7,6 +7,7 @@ public class Bomb : MonoBehaviour
 
     public GameObject ExplosionEffectPrefab;
 
+
     // 충돌했을 때
     private void OnCollisionEnter(Collision collision)
     {
