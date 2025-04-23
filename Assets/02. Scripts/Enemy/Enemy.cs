@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // 인공지능 : 사람처럼 똑똑하게 행동하는 알고리즘
@@ -29,6 +30,9 @@ public class Enemy : MonoBehaviour
     public float MoveSpeed = 3.3f;                      // 이동 속도
     public float AttackCooltime = 2f;                   // 공격 쿨타임
     public float _attackTimer = 0f;                     // 공격 타이머
+    public int Health = 100;                            // 체력   
+    public float DamagedTime = 0.5f;                    // 경직 시간
+    public float DieTime = 1f;                    // 사망 시간
 
     private void Start()
     {
@@ -64,20 +68,32 @@ public class Enemy : MonoBehaviour
                     Attack();
                     break;
                 }
-
-            case EnemyState.Damaged:
-                {
-                    Damaged();
-                    break;
-                }
-
-            case EnemyState.Die:
-                {
-                    Die();
-                    break;
-                }
         }
     }
+
+    public void TakeDamage(Damage damage)
+    {
+        if (CurrentState == EnemyState.Damaged || CurrentState == EnemyState.Die)
+        {
+            return;
+        }
+
+        Health -= damage.Value; // 체력 감소
+
+        if (Health <= 0)
+        {
+            Debug.Log($"상태전환 : {CurrentState} -> Damaged");
+            CurrentState = EnemyState.Die; // 상태 전이
+            StartCoroutine(Die_Coroutine()); // 코루틴 시작
+        }
+
+        Debug.Log($"상태전환 : {CurrentState} -> Damaged");
+
+        CurrentState = EnemyState.Damaged; // 상태 전이
+
+        StartCoroutine(Damaged_Coroutine()); // 코루틴 시작
+    }
+
 
     // 3. 상태 함수 구현
     private void Idle()
@@ -163,13 +179,28 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Damaged()
+    private IEnumerator Damaged_Coroutine()
     {
-        // 행동 : 피격
+        // 행동 : 일정 시간 동안 경직
+        //_damagedTimer += Time.deltaTime;
+
+        //if (_damagedTimer >= DamagedTime)
+        //{
+        //    _damagedTimer = 0f;
+        //    Debug.Log($"상태전환 : Damaged -> Trace");
+        //    CurrentState = EnemyState.Trace;
+        //}
+
+        // 코루틴 방식으로 변경
+        yield return new WaitForSeconds(DamagedTime);
+        Debug.Log($"상태전환 : Damaged -> Trace");
+        CurrentState = EnemyState.Trace;
     }
 
-    private void Die()
+    private IEnumerator Die_Coroutine()
     {
         // 행동 : 사망
+        yield return new WaitForSeconds(DieTime);
+        gameObject.SetActive(false); // 비활성화
     }
 }

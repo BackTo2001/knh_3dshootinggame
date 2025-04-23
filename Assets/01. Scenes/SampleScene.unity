@@ -3332,7 +3332,7 @@ GameObject:
   - component: {fileID: 1938309608}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3469,6 +3469,9 @@ MonoBehaviour:
   FindDistance: 7
   AttackDistance: 2.5
   MoveSpeed: 3.3
+  AttackCooltime: 2
+  _attackTimer: 0
+  Health: 100
 --- !u!1 &1971878257
 GameObject:
   m_ObjectHideFlags: 0

@@ -161,6 +161,16 @@ public class PlayerFire : MonoBehaviour
                 BulletEffect.transform.position = hitInfo.point;
                 BulletEffect.transform.forward = hitInfo.normal; // 법선 벡터 : 직선에 대하여 수직인 벡터
                 BulletEffect.Play();
+
+                if (hitInfo.collider.CompareTag("Enemy"))
+                {
+                    Enemy enemy = hitInfo.collider.GetComponent<Enemy>();
+                    Damage damage = new Damage();
+                    damage.Value = 10; // 총알 피해량
+                    damage.From = this.gameObject; // 총알 발사자
+
+                    enemy.TakeDamage(damage); // 적에게 피해를 입힘
+                }
             }
         }
         UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
