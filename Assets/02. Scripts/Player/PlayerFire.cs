@@ -34,9 +34,9 @@ public class PlayerFire : MonoBehaviour
     private float _fireTimer = 0f;
 
     // - 총알 재장전 타임
-    public float ReloadTime = 2f;
-    private float _reloadTimer = 0f;
-    private bool _isReloading = false;
+    public float ReloadTime = 2f;       // 재장전 시간
+    private float _reloadProgress = 0f; // 재장전 진행 상태
+    private bool _isReloading = false;  // 재장전 여부
 
     // 목표 : 마우스의 왼쪽 버튼을 누르면 카메라가 바라보는 방향으로 총을 발사하고 싶다.
     public ParticleSystem BulletEffect;
@@ -75,14 +75,32 @@ public class PlayerFire : MonoBehaviour
         }
 
         // 총알 발사(레이저 방식)
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0)) // 마우스 왼쪽 버튼을 누르고 있는 동안
         {
-            FireBullet();
+            if (_isReloading)
+            {
+                CancleReload();
+            }
+
+            FireBulletContinuous();
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        // 재장전 시작
+        if (Input.GetKeyDown(KeyCode.R) && !_isReloading && _currentBulletCount < MaxBulletCount)
         {
-            Reload();
+            StartReload();
+        }
+
+        // 재장전 진행
+        if (_isReloading)
+        {
+            ContinueReload();
+        }
+
+        // 타이머 업데이트
+        if (_fireTimer > 0)
+        {
+            _fireTimer -= Time.deltaTime;
         }
         // Ray : 레이저(시작위치, 방향)
         // Raycast : 레이저를 발사
@@ -95,16 +113,24 @@ public class PlayerFire : MonoBehaviour
         {
             _currentBombCount--;
 
+            // 폭탄 가져오기
+            Bomb bomb = BombPool.Instance.GetBomb();
+            if (bomb == null)
+            {
+                Debug.Log("폭탄이 없습니다.");
+                return;
+            }
+
+            // 폭탄 위치
+            bomb.transform.position = FirePosition.transform.position;
+
             // 던지는 힘 계산
             float throwPower = Mathf.Lerp(MinThrowPower, MaxThrowPower, _holdTime / MaxHoldTime);
-
-            // 폭탄 생성 및 발사
-            GameObject bomb = Instantiate(BombPrefab);
-            bomb.transform.position = FirePosition.transform.position;
 
             Rigidbody bombRigidbody = bomb.GetComponent<Rigidbody>();
             bombRigidbody.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
             bombRigidbody.AddTorque(Vector3.one);
+
         }
         UIManager.Instance.RefreshBombText(_currentBombCount, MaxBombCount);
     }
@@ -127,10 +153,9 @@ public class PlayerFire : MonoBehaviour
             // 1. 레이를 생성하고 발사 위치와 진행 방향을 설정
             Ray ray = new Ray(FirePosition.transform.position, Camera.main.transform.forward);
             // 2. 레이와 부딪힌 물체의 정보를 저장할 변수를 생성
-            RaycastHit hitInfo = new RaycastHit();
+            RaycastHit hitInfo;
             // 3. 레이를 발사한 다음
-            bool isHit = Physics.Raycast(ray, out hitInfo);
-            if (isHit)
+            if (Physics.Raycast(ray, out hitInfo))
             {
                 // 3-1. 변수에 데이터가 있다면(부딪혔다면) 피격 이펙트 생성(표시)
                 BulletEffect.transform.position = hitInfo.point;
@@ -141,15 +166,46 @@ public class PlayerFire : MonoBehaviour
         UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
     }
 
-    private void Reload()
+    private void FireBulletContinuous()
     {
-        _currentBulletCount = MaxBulletCount;
-        UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
+        if (_fireTimer <= 0 && _currentBulletCount > 0)
+        {
+            FireBullet(); // 총알 발사
+            _fireTimer = FireInterval; // 쿨타임 초기화
+        }
     }
 
-    private void ResetReload()
+    private void StartReload()
     {
-        _reloadTimer = 0f;
-        _isReloading = false;
+        _isReloading = true;
+        _reloadProgress = 0f;
+        UIManager.Instance.ShowReload(true);
     }
+
+    private void ContinueReload()
+    {
+        _reloadProgress += Time.deltaTime / ReloadTime;
+        UIManager.Instance.UpdateReload(_reloadProgress);
+
+        if (_reloadProgress >= 1f)
+        {
+            CompleteReload();
+        }
+    }
+    private void CompleteReload()
+    {
+        _isReloading = false;
+        _currentBulletCount = MaxBulletCount;
+        UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
+        UIManager.Instance.ShowReload(false);
+    }
+
+    private void CancleReload()
+    {
+        _isReloading = false;
+        _reloadProgress = 0f;
+        UIManager.Instance.ShowReload(false);
+    }
+
+
 }

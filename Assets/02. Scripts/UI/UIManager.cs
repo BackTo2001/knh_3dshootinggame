@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
 
     public Slider StaminaSlider;
     public Slider BombThrowSlider;
+    public Slider ReloadSlider;
     public TextMeshProUGUI BombText;
     public TextMeshProUGUI BulletText;
 
@@ -36,11 +37,31 @@ public class UIManager : MonoBehaviour
             BombThrowSlider.value = 0f; // 초기화
             BombThrowSlider.gameObject.SetActive(false); // 초기에는 비활성화
         }
+        if (ReloadSlider != null)
+        {
+            ReloadSlider.value = 0f; // 초기화
+            ReloadSlider.gameObject.SetActive(false); // 초기에는 비활성화
+        }
     }
+    private void Update()
+    {
+        // PlayerMove에서 스태미나 값을 받아와 UI 업데이트
+        if (_playerStat != null && StaminaSlider != null)
+        {
+            StaminaSlider.value = _playerStat.CurrentStamina / _playerData.MaxStamina; // 0~1로 정규화
+        }
+    }
+
     public void RefreshStaminaSlider(float currentStamina, float MaxStamina)
     {
         StaminaSlider.value = currentStamina / MaxStamina;
     }
+
+    public void RefreshBombText(int currentBombCount, int maxBombCount)
+    {
+        BombText.text = $"{currentBombCount} / {maxBombCount}";
+    }
+
     public void ShowBombThrowSlider(bool show)
     {
         if (BombThrowSlider != null)
@@ -61,18 +82,21 @@ public class UIManager : MonoBehaviour
         BulletText.text = $"{currentBulletCount} / {maxBulletCount}";
     }
 
-    public void RefreshBombText(int currentBombCount, int maxBombCount)
+    public void UpdateReload(float progress)
     {
-        BombText.text = $"{currentBombCount} / {maxBombCount}";
-    }
-
-
-    private void Update()
-    {
-        // PlayerMove에서 스태미나 값을 받아와 UI 업데이트
-        if (_playerStat != null && StaminaSlider != null)
+        if (ReloadSlider != null)
         {
-            StaminaSlider.value = _playerStat.CurrentStamina / _playerData.MaxStamina; // 0~1로 정규화
+            ReloadSlider.value = progress; // Slider 값 업데이트
         }
     }
+
+    public void ShowReload(bool show)
+    {
+        if (ReloadSlider != null)
+        {
+            ReloadSlider.gameObject.SetActive(show); // Slider 활성화/비활성화
+        }
+    }
+
+
 }
