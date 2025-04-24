@@ -164,12 +164,18 @@ public class PlayerFire : MonoBehaviour
                 if (hitInfo.collider.CompareTag("Enemy"))
                 {
                     Enemy enemy = hitInfo.collider.GetComponent<Enemy>();
-                    Damage damage = new Damage();
-                    damage.Value = 10; // 총알 피해량
-                    damage.From = this.gameObject; // 총알 발사자
+                    Damage damage = new Damage(10, gameObject);
 
                     enemy.TakeDamage(damage); // 적에게 피해를 입힘
                 }
+                else if (hitInfo.collider.CompareTag("Barrel"))
+                {
+                    Barrel barrel = hitInfo.collider.GetComponent<Barrel>();
+                    Damage damage = new Damage(10, gameObject);
+
+                    barrel.TakeDamage(damage); // 적에게 피해를 입힘
+                }
+
             }
         }
         UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);

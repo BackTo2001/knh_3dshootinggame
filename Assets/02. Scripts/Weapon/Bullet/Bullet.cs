@@ -10,6 +10,6 @@ public class Bullet : MonoBehaviour
         GameObject effectObject = Instantiate(ExplosionEffectPrefab);
         effectObject.transform.position = transform.position;
 
-        Destroy(gameObject); // ¼ö·ùÅº ÆÄ±«
+        Destroy(gameObject);
     }
 }
