@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 // 인공지능 : 사람처럼 똑똑하게 행동하는 알고리즘
 // - 반응형 / 계획형 -> 규칙 기반 인공지능 (전통적인 방식)
@@ -24,6 +25,7 @@ public class Enemy : MonoBehaviour
 
     private GameObject _player;                         // 플레이어 참조
     private CharacterController _characterController;   // 캐릭터 컨트롤러 참조
+    private NavMeshAgent _agent;                 // 네비메시 에이전트 참조
 
     private Vector3 _startPosition;                     // 원래 위치
     public float FindDistance = 5f;                     // 플레이어 발견 범위
@@ -43,6 +45,9 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.speed = MoveSpeed; // 이동 속도 설정
+
         _startPosition = transform.position; // 원래 위치 저장
         _characterController = GetComponent<CharacterController>();
         _player = GameObject.FindGameObjectWithTag("Player");
@@ -132,7 +137,8 @@ public class Enemy : MonoBehaviour
         while (elapsedTime < knockbackDuration)
         {
             // 캐릭터 컨트롤러를 사용하여 넉백 적용
-            _characterController.Move(_knockbackPower * Time.deltaTime);
+            //_characterController.Move(_knockbackPower * Time.deltaTime);
+            _agent.Move(_knockbackPower * Time.deltaTime); // NavMeshAgent를 사용하여 넉백 적용
             elapsedTime += Time.deltaTime; // 경과 시간 증가
             yield return null; // 다음 프레임까지 대기
         }
@@ -174,8 +180,9 @@ public class Enemy : MonoBehaviour
 
         // 행동 : 순찰 지점으로 이동한다.
         Transform targetPoint = PatrolPoints[_currentPatrolIndex];
-        Vector3 dir = (targetPoint.position - transform.position).normalized;
-        _characterController.Move(dir * MoveSpeed * Time.deltaTime);
+        //Vector3 dir = (targetPoint.position - transform.position).normalized;
+        //_characterController.Move(dir * MoveSpeed * Time.deltaTime);
+        _agent.SetDestination(targetPoint.position); // NavMeshAgent를 사용하여 순찰 지점으로 이동
 
         // 행동2 : 순찰 지점에 도착하면 -> 다음 지점으로 이동
         float distanceToTarget = Vector3.Distance(transform.position, targetPoint.position);
@@ -203,15 +210,15 @@ public class Enemy : MonoBehaviour
         }
 
         // 행동 : 플레이어를 추적한다.
-        Vector3 dir = (_player.transform.position - transform.position).normalized;
-        _characterController.Move(dir * MoveSpeed * Time.deltaTime);
-
+        //Vector3 dir = (_player.transform.position - transform.position).normalized;
+        //_characterController.Move(dir * MoveSpeed * Time.deltaTime);
+        _agent.SetDestination(_player.transform.position); // NavMeshAgent를 사용하여 플레이어를 추적
     }
 
     private void Return()
     {
         // 전이 : 시작 위치와 가까워 지면 -> Idle
-        if (Vector3.Distance(transform.position, _startPosition) <= _characterController.minMoveDistance)
+        if (Vector3.Distance(transform.position, _startPosition) <= 0.1f)
         {
             Debug.Log("상태전환 : Return -> Idle");
             transform.position = _startPosition;
@@ -228,8 +235,9 @@ public class Enemy : MonoBehaviour
         }
 
         // 행동 : 원래 위치로 돌아간다.
-        Vector3 dir = (_startPosition - transform.position).normalized;
-        _characterController.Move(dir * MoveSpeed * Time.deltaTime);
+        //Vector3 dir = (_startPosition - transform.position).normalized;
+        //_characterController.Move(dir * MoveSpeed * Time.deltaTime);
+        _agent.SetDestination(_startPosition); // NavMeshAgent를 사용하여 원래 위치로 돌아감
     }
 
     private void Attack()
@@ -266,6 +274,8 @@ public class Enemy : MonoBehaviour
         //}
 
         // 코루틴 방식으로 변경
+        _agent.isStopped = true; // 이동 정지
+        _agent.ResetPath();
         yield return new WaitForSeconds(DamagedTime);
         Debug.Log($"상태전환 : Damaged -> Trace");
         CurrentState = EnemyState.Trace;
