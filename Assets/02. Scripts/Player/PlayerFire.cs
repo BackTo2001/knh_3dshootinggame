@@ -43,7 +43,6 @@ public class PlayerFire : MonoBehaviour
 
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
 
         //BombPool.Instance.SetPoolSize(MaxBombCount);
 

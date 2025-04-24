@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private PlayerStat _playerStat; // PlayerStat 참조
     [SerializeField] private PlayerDataSO _playerData; // PlayerDataSO 참조
+    [SerializeField] private Camera _minimapCamera;
 
     public Slider StaminaSlider;
     public Slider BombThrowSlider;
@@ -25,10 +26,15 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI BombText;
     public TextMeshProUGUI BulletText;
     public TextMeshProUGUI ReloadText;
+    public Button ZoomInButton;
+    public Button ZoomOutButton;
 
 
     private void Start()
     {
+        // Cursor 처리
+        Cursor.lockState = CursorLockMode.Locked;
+
         if (StaminaSlider != null)
         {
             StaminaSlider.value = 1f;
@@ -43,6 +49,10 @@ public class UIManager : MonoBehaviour
             ReloadSlider.value = 0f; // 초기화
             ReloadSlider.gameObject.SetActive(false); // 초기에는 비활성화
         }
+
+        // Zoom 버튼 클릭 이벤트 등록
+        ZoomInButton.onClick.AddListener(ZoomIn);
+        ZoomOutButton.onClick.AddListener(ZoomOut);
     }
     private void Update()
     {
@@ -50,6 +60,16 @@ public class UIManager : MonoBehaviour
         if (_playerStat != null && StaminaSlider != null)
         {
             StaminaSlider.value = _playerStat.CurrentStamina / _playerData.MaxStamina; // 0~1로 정규화
+        }
+
+        // ZoomIn / ZoomOut 키보드
+        if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus)) // + 키
+        {
+            ZoomIn();
+        }
+        if (Input.GetKeyDown(KeyCode.Minus)) // - 키
+        {
+            ZoomOut();
         }
     }
 
@@ -124,6 +144,28 @@ public class UIManager : MonoBehaviour
             {
                 ReloadText.text = ""; // 비활성화 시 텍스트 초기화
             }
+        }
+    }
+
+    private void ZoomIn()
+    {
+        float MinZoom = 5f; // 최소 Zoom 값
+        float ZoomStep = 1f; // Zoom 조정 단위
+
+        if (_minimapCamera != null)
+        {
+            _minimapCamera.orthographicSize = Mathf.Max(_minimapCamera.orthographicSize - ZoomStep, MinZoom);
+        }
+    }
+
+    private void ZoomOut()
+    {
+        float MaxZoom = 15f; // 최대 Zoom 값
+        float ZoomStep = 1f; // Zoom 조정 단위
+
+        if (_minimapCamera != null)
+        {
+            _minimapCamera.orthographicSize = Mathf.Min(_minimapCamera.orthographicSize + ZoomStep, MaxZoom);
         }
     }
 }

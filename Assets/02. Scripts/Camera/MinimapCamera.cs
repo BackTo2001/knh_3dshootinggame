@@ -5,6 +5,18 @@ public class MinimapCamera : MonoBehaviour
     public Transform Target; // 추적할 타겟
     public float YOffset = 10f; // Y축 오프셋
 
+    private void Update()
+    {
+        // alt키를 누르면 마우스 visible
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftAlt))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
     private void LateUpdate()
     {
         Vector3 newPosition = Target.position; // 타겟의 위치를 가져옴
