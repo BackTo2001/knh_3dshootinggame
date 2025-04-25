@@ -161,21 +161,16 @@ public class PlayerFire : MonoBehaviour
                 BulletEffect.transform.forward = hitInfo.normal; // 법선 벡터 : 직선에 대하여 수직인 벡터
                 BulletEffect.Play();
 
-                if (hitInfo.collider.CompareTag("Enemy"))
+                IDamageable damageable = hitInfo.collider.GetComponent<IDamageable>();
+                //if(hitInfo.collider.TryGetComponent<IDamageable>(out damageable))
+                //{
+
+                //}
+                if (damageable != null)
                 {
-                    Enemy enemy = hitInfo.collider.GetComponent<Enemy>();
                     Damage damage = new Damage(10, gameObject);
-
-                    enemy.TakeDamage(damage); // 적에게 피해를 입힘
+                    damageable.TakeDamage(damage); // 적에게 피해를 입힘
                 }
-                else if (hitInfo.collider.CompareTag("Barrel"))
-                {
-                    Barrel barrel = hitInfo.collider.GetComponent<Barrel>();
-                    Damage damage = new Damage(10, gameObject);
-
-                    barrel.TakeDamage(damage); // 적에게 피해를 입힘
-                }
-
             }
         }
         UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
@@ -212,9 +207,9 @@ public class PlayerFire : MonoBehaviour
     {
         _isReloading = false;
         _currentBulletCount = MaxBulletCount;
-        //UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount);
-        //UIManager.Instance.ShowReload(false);
+        _currentBombCount = MaxBombCount; // 폭탄 개수 초기화
         UIManager.Instance.RefreshBulletText(_currentBulletCount, MaxBulletCount); // UI 업데이트
+        UIManager.Instance.RefreshBombText(_currentBombCount, MaxBombCount); // UI 업데이트
         UIManager.Instance.ShowReloadText(false); // 텍스트 숨기기
     }
     private void CancleReload()

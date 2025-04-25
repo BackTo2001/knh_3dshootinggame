@@ -6,21 +6,30 @@ using UnityEngine.AI;
 // - 반응형 / 계획형 -> 규칙 기반 인공지능 (전통적인 방식)
 
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
+    // 적 타입
+    public enum EnemyType
+    {
+        Default = 0,
+        Follow = 1
+    }
+
     // 1. 상태를 열거형으로 정의
     public enum EnemyState
     {
-        Idle = 0,
-        Trace = 1,
-        Patrol = 2,
-        Return = 3,
-        Attack = 4,
-        Damaged = 5,
-        Die = 6
+        Idle,
+        Trace,
+        Patrol,
+        Follow,
+        Return,
+        Attack,
+        Damaged,
+        Die
     }
 
     // 2. 현재 상태를 지정
+    public EnemyType Type = EnemyType.Default;
     public EnemyState CurrentState = EnemyState.Idle;
 
     private GameObject _player;                         // 플레이어 참조
@@ -43,6 +52,15 @@ public class Enemy : MonoBehaviour
     private float knockbackDuration = 0.5f;             // 넉백 지속 시간
     private float elapsedTime = 0f;                     // 경과 시간
 
+    public void Initialize()
+    {
+        // 적의 초기 상태 설정
+        Health = 100; // 체력 초기화
+        CurrentState = EnemyState.Idle; // 기본 상태로 설정
+        _agent.ResetPath(); // NavMeshAgent 경로 초기화
+        gameObject.SetActive(true); // 활성화
+    }
+
     private void Start()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -55,6 +73,12 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (Type == EnemyType.Follow)
+        {
+            CurrentState = EnemyState.Follow;
+            Follow();
+            return;
+        }
         switch (CurrentState)
         {
             case EnemyState.Idle:
@@ -72,6 +96,12 @@ public class Enemy : MonoBehaviour
             case EnemyState.Trace:
                 {
                     Trace();
+                    break;
+                }
+
+            case EnemyState.Follow:
+                {
+                    Follow();
                     break;
                 }
 
@@ -152,6 +182,7 @@ public class Enemy : MonoBehaviour
     // 3. 상태 함수 구현
     private void Idle()
     {
+
         // 행동 : 가만히 있는다.
         _idleTimer += Time.deltaTime; // 타이머 증가
 
@@ -217,6 +248,11 @@ public class Enemy : MonoBehaviour
         //Vector3 dir = (_player.transform.position - transform.position).normalized;
         //_characterController.Move(dir * MoveSpeed * Time.deltaTime);
         _agent.SetDestination(_player.transform.position); // NavMeshAgent를 사용하여 플레이어를 추적
+    }
+
+    private void Follow()
+    {
+        _agent.SetDestination(_player.transform.position);
     }
 
     private void Return()

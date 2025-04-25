@@ -1,5 +1,5 @@
 using UnityEngine;
-public class Barrel : MonoBehaviour
+public class Barrel : MonoBehaviour, IDamageable
 {
     /*
      * 과제 2. 드럼통(Barrel) 구현
@@ -44,60 +44,44 @@ public class Barrel : MonoBehaviour
         GameObject effectObject = Instantiate(ExplosionEffectPrefab);
         effectObject.transform.position = transform.position;
 
+        // LayerMask 설정
+        // 유니티는 레이어를 넘버링하는게 아니라 비트로 관리
+        // 2진수 -> 0000 0000
+        // 9번 레이어 선택 0000 0001 0000 0000
+        // 9번 레이어 제외 선택 1111 1110 1111 1111
+        // 비트 단위로 on/off를 관리할 수 있다.
+        // int (32비트)
+        // bool(8비트)
+
+
         // 폭발 범위 내 모든 객체 탐지
         Collider[] colliders = Physics.OverlapSphere(transform.position, ExplosionRadius, LayerMask);
 
         foreach (Collider collider in colliders)
         {
             // 적 또는 플레이어게게 데미지 적용
-            if (collider.CompareTag("Enemy"))
+            if (collider.TryGetComponent(out IDamageable damageable))
             {
-                Enemy enemy = collider.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    Damage damage = new Damage((int)DamageAmount, gameObject);
-                    enemy.TakeDamage(damage);
-                }
+                Damage damage = new Damage((int)DamageAmount, gameObject);
+                damageable.TakeDamage(damage); // 적에게 피해를 입힘
             }
 
             // 다른 드럼통 연쇄 폭발
-            else if (collider.CompareTag("Barrel") && collider.gameObject != this.gameObject)
-            {
-                Barrel otherBarrel = collider.GetComponent<Barrel>();
-                if (otherBarrel != null)
-                {
-                    Damage damage = new Damage((int)DamageAmount, gameObject);
-                    otherBarrel.TakeDamage(damage); // 다른 드럼통에 데미지 적용
-                }
-            }
+            //else if (collider.CompareTag("Barrel") && collider.gameObject != this.gameObject)
+            //{
+            //    Barrel otherBarrel = collider.GetComponent<Barrel>();
+            //    if (otherBarrel != null)
+            //    {
+            //        Damage damage = new Damage((int)DamageAmount, gameObject);
+            //        otherBarrel.TakeDamage(damage); // 다른 드럼통에 데미지 적용
+            //    }
+            //}
 
             // 폭발력 적용
             Rigidbody rigidbody = collider.GetComponent<Rigidbody>();
             if (rigidbody != null)
             {
                 rigidbody.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius);
-                //rigidbody.AddForce(rigidbody.position - transform.position); // 폭발력 적용
-                //rigidbody.AddTorque(Vector3.one * 10f, ForceMode.Impulse); // 회전력 적용
-                //// 무작위 방향으로 이동
-                //Vector3 randomDirection = new Vector3(
-                //    Random.Range(-1f, 1f),
-                //    Random.Range(0.5f, 1.5f), // 위쪽으로 더 많이 튀도록 설정
-                //    Random.Range(-1f, 1f)
-                //).normalized;
-
-                //float randomDistance = Random.Range(10f, 20f); // 이동 거리
-                //Vector3 targetPosition = transform.position + randomDirection * randomDistance;
-
-                //// DOTween을 사용하여 부드럽게 이동
-                //float duration = 0.5f; // 이동 및 회전 지속 시간
-                //transform.DOMove(targetPosition, duration).SetEase(Ease.OutQuad);
-                //// 무작위 축으로 회전
-                //Vector3 randomRotation = new Vector3(
-                //    Random.Range(0f, 360f),
-                //    Random.Range(0f, 360f),
-                //    Random.Range(0f, 360f)
-                //);
-                //transform.DORotate(randomRotation, duration, RotateMode.WorldAxisAdd);
             }
         }
         // 드럼통 삭제
