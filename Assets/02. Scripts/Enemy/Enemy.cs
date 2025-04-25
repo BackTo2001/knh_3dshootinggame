@@ -52,23 +52,25 @@ public class Enemy : MonoBehaviour, IDamageable
     private float knockbackDuration = 0.5f;             // 넉백 지속 시간
     private float elapsedTime = 0f;                     // 경과 시간
 
+    private void Start()
+    {
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.speed = MoveSpeed; // 이동 속도 설정
+        _startPosition = transform.position; // 원래 위치 저장
+        _characterController = GetComponent<CharacterController>();
+        _player = GameObject.FindGameObjectWithTag("Player");
+    }
     public void Initialize()
     {
         // 적의 초기 상태 설정
         Health = 100; // 체력 초기화
         CurrentState = EnemyState.Idle; // 기본 상태로 설정
-        _agent.ResetPath(); // NavMeshAgent 경로 초기화
+        if (_agent == null)
+            _agent = GetComponent<NavMeshAgent>();
+
+        if (_agent != null)
+            _agent.ResetPath();
         gameObject.SetActive(true); // 활성화
-    }
-
-    private void Start()
-    {
-        _agent = GetComponent<NavMeshAgent>();
-        _agent.speed = MoveSpeed; // 이동 속도 설정
-
-        _startPosition = transform.position; // 원래 위치 저장
-        _characterController = GetComponent<CharacterController>();
-        _player = GameObject.FindGameObjectWithTag("Player");
     }
 
     private void Update()

@@ -7,6 +7,7 @@ TagManager:
   - FxTemporaire
   - Enemy
   - Barrel
+  - PatrolPoint
   layers:
   - Default
   - TransparentFX

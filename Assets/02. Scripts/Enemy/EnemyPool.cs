@@ -6,7 +6,7 @@ public class EnemyPool : MonoBehaviour
 {
     public List<Enemy> EnemyPrefabs; // 적 프리팹
 
-    public int PoolSize = 50;
+    public int PoolSize = 10;
 
     public List<Enemy> _enemies; // 적 풀 리스트
 
@@ -63,5 +63,18 @@ public class EnemyPool : MonoBehaviour
     {
         enemy.gameObject.SetActive(false); // 비활성화
         enemy.transform.SetParent(this.transform); // 풀로 반환
+    }
+
+    public int GetActiveEnemyCount()
+    {
+        int activeCount = 0;
+        foreach (Enemy enemy in _enemies)
+        {
+            if (enemy.gameObject.activeInHierarchy)
+            {
+                activeCount++;
+            }
+        }
+        return activeCount;
     }
 }
