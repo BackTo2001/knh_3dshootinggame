@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7435624669745314551}
   - component: {fileID: -5659503010837462602}
   - component: {fileID: 7924035274001580003}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Barrels 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,3 +152,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ExplosionEffectPrefab: {fileID: 0}
+  ExplosionRadius: 5
+  ExplosionForce: 500
+  DamageAmount: 50
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 648
+  Health: 20

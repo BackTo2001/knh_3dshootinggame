@@ -91,7 +91,11 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(Damage damage)
     {
-        if (CurrentState == EnemyState.Damaged || CurrentState == EnemyState.Die)
+        //if (CurrentState == EnemyState.Damaged || CurrentState == EnemyState.Die)
+        //{
+        //    return;
+        //}
+        if (CurrentState == EnemyState.Die)
         {
             return;
         }
