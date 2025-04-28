@@ -1,25 +1,17 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance = null;
+    public static UIManager Instance { get; private set; }
 
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        Instance = this;
-    }
-
-    [SerializeField] private PlayerStat _playerStat; // PlayerStat 참조
-    [SerializeField] private PlayerDataSO _playerData; // PlayerDataSO 참조
+    [SerializeField] private PlayerStat _playerStat;
+    [SerializeField] private PlayerDataSO _playerData;
     [SerializeField] private Camera _minimapCamera;
 
+    [Header("UI Elements")]
     public Slider StaminaSlider;
     public Slider HealthSlider;
     public Slider BombThrowSlider;
@@ -30,54 +22,70 @@ public class UIManager : MonoBehaviour
     public Button ZoomInButton;
     public Button ZoomOutButton;
 
+    private const float MinZoom = 5f;
+    private const float MaxZoom = 15f;
+    private const float ZoomStep = 1f;
 
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Start()
     {
-        // Cursor 처리
-        Cursor.lockState = CursorLockMode.Locked;
-
-        if (StaminaSlider != null)
-        {
-            StaminaSlider.value = 1f;
-        }
-        if (HealthSlider != null)
-        {
-            HealthSlider.value = 1f; // 초기화
-        }
+        if (StaminaSlider != null) StaminaSlider.value = 1f;
+        if (HealthSlider != null) HealthSlider.value = 1f;
         if (BombThrowSlider != null)
         {
-            BombThrowSlider.value = 0f; // 초기화
-            BombThrowSlider.gameObject.SetActive(false); // 초기에는 비활성화
+            BombThrowSlider.value = 0f;
+            BombThrowSlider.gameObject.SetActive(false);
         }
         if (ReloadSlider != null)
         {
-            ReloadSlider.value = 0f; // 초기화
-            ReloadSlider.gameObject.SetActive(false); // 초기에는 비활성화
+            ReloadSlider.value = 0f;
+            ReloadSlider.gameObject.SetActive(false);
         }
 
-        // Zoom 버튼 클릭 이벤트 등록
-        ZoomInButton.onClick.AddListener(ZoomIn);
-        ZoomOutButton.onClick.AddListener(ZoomOut);
+        if (ZoomInButton != null) ZoomInButton.onClick.AddListener(ZoomIn);
+        if (ZoomOutButton != null) ZoomOutButton.onClick.AddListener(ZoomOut);
     }
+
     private void Update()
     {
-        // PlayerMove에서 스태미나 값을 받아와 UI 업데이트
+        UpdateStaminaUI();
+        UpdateHealthUI();
+        HandleZoomInput();
+    }
+
+    private void UpdateStaminaUI()
+    {
         if (_playerStat != null && StaminaSlider != null)
         {
-            StaminaSlider.value = _playerStat.CurrentStamina / _playerData.MaxStamina; // 0~1로 정규화
+            StaminaSlider.value = _playerStat.CurrentStamina / _playerData.MaxStamina;
         }
+    }
+
+    private void UpdateHealthUI()
+    {
         if (_playerStat != null && HealthSlider != null)
         {
-            HealthSlider.value = _playerStat.CurrentHealth / _playerData.MaxHealth; // 0~1로 정규화
+            HealthSlider.value = _playerStat.CurrentHealth / _playerData.MaxHealth;
         }
+    }
 
-        // ZoomIn / ZoomOut 키보드
-        if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus)) // + 키
+    private void HandleZoomInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus))
         {
             ZoomIn();
         }
-        if (Input.GetKeyDown(KeyCode.Minus)) // - 키
+        if (Input.GetKeyDown(KeyCode.Minus))
         {
             ZoomOut();
         }
@@ -85,88 +93,77 @@ public class UIManager : MonoBehaviour
 
     public void RefreshStaminaSlider(float currentStamina, float MaxStamina)
     {
-        StaminaSlider.value = currentStamina / MaxStamina;
+        if (StaminaSlider != null)
+            StaminaSlider.value = currentStamina / MaxStamina;
     }
 
     public void RefreshHealthSlider(float currentHealth, float maxHealth)
     {
-        HealthSlider.value = currentHealth / maxHealth; // 0~1로 정규화
+        if (HealthSlider != null)
+            HealthSlider.value = currentHealth / maxHealth;
     }
 
     public void RefreshBombText(int currentBombCount, int maxBombCount)
     {
-        BombText.text = $"{currentBombCount} / {maxBombCount}";
+        if (BombText != null)
+            BombText.text = $"{currentBombCount} / {maxBombCount}";
     }
 
     public void ShowBombThrowSlider(bool show)
     {
         if (BombThrowSlider != null)
-        {
-            BombThrowSlider.gameObject.SetActive(show); // Slider 활성화/비활성화
-        }
+            BombThrowSlider.gameObject.SetActive(show);
     }
+
     public void UpdateBombThrowPower(float normalizedPower)
     {
         if (BombThrowSlider != null)
-        {
-            BombThrowSlider.value = normalizedPower; // 0~1로 정규화된 값 업데이트
-        }
+            BombThrowSlider.value = normalizedPower;
     }
 
     public void RefreshBulletText(int currentBulletCount, int maxBulletCount)
     {
-        BulletText.text = $"{currentBulletCount} / {maxBulletCount}";
+        if (BulletText != null)
+            BulletText.text = $"{currentBulletCount} / {maxBulletCount}";
     }
 
     public void UpdateReload(float progress)
     {
         if (ReloadSlider != null)
-        {
-            ReloadSlider.value = progress; // Slider 값 업데이트
-        }
+            ReloadSlider.value = progress;
     }
 
     public void ShowReload(bool show)
     {
         if (ReloadSlider != null)
-        {
-            ReloadSlider.gameObject.SetActive(show); // Slider 활성화/비활성화
-        }
+            ReloadSlider.gameObject.SetActive(show);
     }
 
     public void UpdateReloadTextWithColor(float progress)
     {
         if (ReloadText != null)
         {
-            // 진행 상태를 퍼센트로 변환
             int percentage = Mathf.RoundToInt(progress * 100);
-
-            // 텍스트 업데이트
             ReloadText.text = $"재장전 중... {percentage}%";
 
-            // 색상 업데이트 (흰색에서 빨간색으로)
             Color startColor = Color.white;
             Color endColor = Color.red;
             ReloadText.color = Color.Lerp(startColor, endColor, progress);
         }
     }
+
     public void ShowReloadText(bool show)
     {
         if (ReloadText != null)
         {
-            ReloadText.gameObject.SetActive(show); // 텍스트 활성화/비활성화
+            ReloadText.gameObject.SetActive(show);
             if (!show)
-            {
-                ReloadText.text = ""; // 비활성화 시 텍스트 초기화
-            }
+                ReloadText.text = "";
         }
     }
 
     private void ZoomIn()
     {
-        float MinZoom = 5f; // 최소 Zoom 값
-        float ZoomStep = 1f; // Zoom 조정 단위
-
         if (_minimapCamera != null)
         {
             _minimapCamera.orthographicSize = Mathf.Max(_minimapCamera.orthographicSize - ZoomStep, MinZoom);
@@ -175,12 +172,39 @@ public class UIManager : MonoBehaviour
 
     private void ZoomOut()
     {
-        float MaxZoom = 15f; // 최대 Zoom 값
-        float ZoomStep = 1f; // Zoom 조정 단위
-
         if (_minimapCamera != null)
         {
             _minimapCamera.orthographicSize = Mathf.Min(_minimapCamera.orthographicSize + ZoomStep, MaxZoom);
         }
+    }
+
+    // 코루틴으로 수정한 Ready/Run/Over UI 함수들
+    public IEnumerator ShowReadyUI()
+    {
+        ToggleMainUI(false);
+        Debug.Log("Ready UI is now active.");
+        yield return null;
+    }
+
+    public IEnumerator ShowRunUI()
+    {
+        ToggleMainUI(true);
+        Debug.Log("Run UI is now active.");
+        yield return null;
+    }
+
+    public IEnumerator ShowOverUI()
+    {
+        ToggleMainUI(false);
+        Debug.Log("Over UI is now active.");
+        yield return null;
+    }
+
+    private void ToggleMainUI(bool isActive)
+    {
+        if (HealthSlider != null) HealthSlider.gameObject.SetActive(isActive);
+        if (StaminaSlider != null) StaminaSlider.gameObject.SetActive(isActive);
+        if (BombText != null) BombText.gameObject.SetActive(isActive);
+        if (BulletText != null) BulletText.gameObject.SetActive(isActive);
     }
 }

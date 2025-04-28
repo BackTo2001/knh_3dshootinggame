@@ -39,8 +39,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
     //private Animator _animator;
 
-
-
     public float FindDistance = 5f;                     // 플레이어 발견 범위
     public float AttackDistance = 2.5f;                 // 플레이어 공격 범위
     public float MoveSpeed = 3.3f;                      // 이동 속도
@@ -56,6 +54,11 @@ public class Enemy : MonoBehaviour, IDamageable
     private float knockbackDuration = 0.5f;             // 넉백 지속 시간
     private float elapsedTime = 0f;                     // 경과 시간
 
+    [SerializeField] private float maxHealth = 100f;
+    private float currentHealth;
+
+    [SerializeField] private HealthBar healthBar; // 체력바 참조
+
     private void Start()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -65,6 +68,14 @@ public class Enemy : MonoBehaviour, IDamageable
         _characterController = GetComponent<CharacterController>();
         //_animator = GetComponentInChildren<Animator>();
         _player = GameObject.FindGameObjectWithTag("Player");
+
+        currentHealth = maxHealth;
+
+        // 초기 체력 설정
+        if (healthBar != null)
+        {
+            healthBar.SetHealth(currentHealth, maxHealth);
+        }
     }
     public void Initialize()
     {
@@ -136,22 +147,26 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void TakeDamage(Damage damage)
     {
-        //if (CurrentState == EnemyState.Damaged || CurrentState == EnemyState.Die)
-        //{
-        //    return;
-        //}
         if (CurrentState == EnemyState.Die)
         {
             return;
         }
 
-        Health -= damage.Value; // 체력 감소
+        // 체력 감소
+        currentHealth -= damage.Value;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        if (Health <= 0)
+        // 체력바 업데이트
+        if (healthBar != null)
         {
-            Debug.Log($"상태전환 : {CurrentState} -> Damaged");
+            healthBar.SetHealth(currentHealth, maxHealth);
+        }
+
+        if (currentHealth <= 0)
+        {
+            Debug.Log($"상태전환 : {CurrentState} -> Die");
             CurrentState = EnemyState.Die; // 상태 전이
-            //_animator.SetTrigger("Die");
+                                           //_animator.SetTrigger("Die");
             StartCoroutine(Die_Coroutine()); // 코루틴 시작
             return;
         }
