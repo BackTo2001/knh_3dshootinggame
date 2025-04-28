@@ -10,6 +10,9 @@ public class CameraRotate : MonoBehaviour
     [Header("# Camera Manager")]
     [SerializeField] private CameraManager _cameraManager; // CameraManager 참조
 
+    [SerializeField] private Transform _playerBody;  // 플레이어 몸통 Transform
+    [SerializeField] private Transform _cameraTransform; // 카메라 Transform
+
     private void Update()
     {
         if (_cameraManager == null)
@@ -37,14 +40,14 @@ public class CameraRotate : MonoBehaviour
     private void HandleFPSRotation()
     {
         // FPS 모드: 카메라가 플레이어의 시점에서 자유롭게 회전
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        float mouseX = Input.GetAxis("Mouse X") * RotationSpeed * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * RotationSpeed * Time.deltaTime;
 
-        _rotationX += mouseX * RotationSpeed * Time.deltaTime;
-        _rotationY += -mouseY * RotationSpeed * Time.deltaTime;
+        _rotationY -= mouseY;
         _rotationY = Mathf.Clamp(_rotationY, -90f, 90f);
 
-        transform.eulerAngles = new Vector3(_rotationY, _rotationX, 0);
+        _cameraTransform.localRotation = Quaternion.Euler(_rotationY, 0f, 0f);   // 카메라는 X축으로만
+        _playerBody.Rotate(Vector3.up * mouseX);
     }
 
     private void HandleTPSRotation()

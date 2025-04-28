@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Camera _minimapCamera;
 
     public Slider StaminaSlider;
+    public Slider HealthSlider;
     public Slider BombThrowSlider;
     public Slider ReloadSlider;
     public TextMeshProUGUI BombText;
@@ -28,6 +29,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI ReloadText;
     public Button ZoomInButton;
     public Button ZoomOutButton;
+
 
 
     private void Start()
@@ -38,6 +40,10 @@ public class UIManager : MonoBehaviour
         if (StaminaSlider != null)
         {
             StaminaSlider.value = 1f;
+        }
+        if (HealthSlider != null)
+        {
+            HealthSlider.value = 1f; // 초기화
         }
         if (BombThrowSlider != null)
         {
@@ -61,6 +67,10 @@ public class UIManager : MonoBehaviour
         {
             StaminaSlider.value = _playerStat.CurrentStamina / _playerData.MaxStamina; // 0~1로 정규화
         }
+        if (_playerStat != null && HealthSlider != null)
+        {
+            HealthSlider.value = _playerStat.CurrentHealth / _playerData.MaxHealth; // 0~1로 정규화
+        }
 
         // ZoomIn / ZoomOut 키보드
         if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus)) // + 키
@@ -76,6 +86,11 @@ public class UIManager : MonoBehaviour
     public void RefreshStaminaSlider(float currentStamina, float MaxStamina)
     {
         StaminaSlider.value = currentStamina / MaxStamina;
+    }
+
+    public void RefreshHealthSlider(float currentHealth, float maxHealth)
+    {
+        HealthSlider.value = currentHealth / maxHealth; // 0~1로 정규화
     }
 
     public void RefreshBombText(int currentBombCount, int maxBombCount)

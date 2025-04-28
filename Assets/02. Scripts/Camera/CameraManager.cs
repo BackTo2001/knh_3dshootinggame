@@ -51,7 +51,7 @@ public class CameraManager : MonoBehaviour
 
             case CameraMode.TPS:
                 transform.position = _tps.position;
-                transform.LookAt(_targetTransform);
+                transform.rotation = Quaternion.Euler(15f, _targetTransform.eulerAngles.y, 0f);
                 break;
 
             case CameraMode.QuarterView:

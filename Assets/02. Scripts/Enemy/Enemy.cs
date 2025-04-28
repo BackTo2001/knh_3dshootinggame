@@ -317,6 +317,9 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             // _animator.SetTrigger("AttackDelayToAttack");
             Debug.Log("플레이어 공격!");
+            Damage damage = new Damage(10, gameObject); // 데미지 값 10, 공격자 정보 전달
+            _player.GetComponent<IDamageable>()?.TakeDamage(damage); // 플레이어에 데미지 전달
+
             _attackTimer = 0f;
         }
     }
