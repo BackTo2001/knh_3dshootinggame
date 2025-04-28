@@ -35,8 +35,12 @@ public class Enemy : MonoBehaviour, IDamageable
     private GameObject _player;                         // 플레이어 참조
     private CharacterController _characterController;   // 캐릭터 컨트롤러 참조
     private NavMeshAgent _agent;                 // 네비메시 에이전트 참조
-
     private Vector3 _startPosition;                     // 원래 위치
+
+    //private Animator _animator;
+
+
+
     public float FindDistance = 5f;                     // 플레이어 발견 범위
     public float AttackDistance = 2.5f;                 // 플레이어 공격 범위
     public float MoveSpeed = 3.3f;                      // 이동 속도
@@ -56,8 +60,10 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         _agent = GetComponent<NavMeshAgent>();
         _agent.speed = MoveSpeed; // 이동 속도 설정
+
         _startPosition = transform.position; // 원래 위치 저장
         _characterController = GetComponent<CharacterController>();
+        //_animator = GetComponentInChildren<Animator>();
         _player = GameObject.FindGameObjectWithTag("Player");
     }
     public void Initialize()
@@ -65,11 +71,15 @@ public class Enemy : MonoBehaviour, IDamageable
         // 적의 초기 상태 설정
         Health = 100; // 체력 초기화
         CurrentState = EnemyState.Idle; // 기본 상태로 설정
+        _idleTimer = 0f; // 타이머 초기화
+        _currentPatrolIndex = 0; // 순찰 인덱스 초기화
+
         if (_agent == null)
             _agent = GetComponent<NavMeshAgent>();
 
-        if (_agent != null)
+        if (_agent.isOnNavMesh)
             _agent.ResetPath();
+
         gameObject.SetActive(true); // 활성화
     }
 
@@ -77,7 +87,10 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if (Type == EnemyType.Follow)
         {
-            CurrentState = EnemyState.Follow;
+            if (CurrentState != EnemyState.Follow)
+            {
+                CurrentState = EnemyState.Follow;
+            }
             Follow();
             return;
         }
@@ -138,6 +151,7 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             Debug.Log($"상태전환 : {CurrentState} -> Damaged");
             CurrentState = EnemyState.Die; // 상태 전이
+            //_animator.SetTrigger("Die");
             StartCoroutine(Die_Coroutine()); // 코루틴 시작
             return;
         }
@@ -147,6 +161,7 @@ public class Enemy : MonoBehaviour, IDamageable
         // 넉백 적용
         ApplyKnockback(damage);
 
+        //_animator.SetTrigger("Hit");
         CurrentState = EnemyState.Damaged; // 상태 전이
 
         StartCoroutine(Damaged_Coroutine()); // 코루틴 시작
@@ -202,6 +217,7 @@ public class Enemy : MonoBehaviour, IDamageable
             Debug.Log("상태전환 : Idle -> Trace");
             _idleTimer = 0f; // 타이머 초기화
             CurrentState = EnemyState.Trace;
+            //_animator.SetTrigger("IdleToTrace");
         }
     }
 
@@ -291,6 +307,7 @@ public class Enemy : MonoBehaviour, IDamageable
             Debug.Log("상태전환 : Attack -> Trace");
             CurrentState = EnemyState.Trace;
             _attackTimer = 0f;
+            //_animator.SetTrigger("AttackDelayToMove");
             return;
         }
 
@@ -298,6 +315,7 @@ public class Enemy : MonoBehaviour, IDamageable
         _attackTimer += Time.deltaTime;
         if (_attackTimer >= AttackCooltime)
         {
+            // _animator.SetTrigger("AttackDelayToAttack");
             Debug.Log("플레이어 공격!");
             _attackTimer = 0f;
         }
@@ -318,7 +336,9 @@ public class Enemy : MonoBehaviour, IDamageable
         // 코루틴 방식으로 변경
         _agent.isStopped = true; // 이동 정지
         _agent.ResetPath();
+
         yield return new WaitForSeconds(DamagedTime);
+
         Debug.Log($"상태전환 : Damaged -> Trace");
         CurrentState = EnemyState.Trace;
     }

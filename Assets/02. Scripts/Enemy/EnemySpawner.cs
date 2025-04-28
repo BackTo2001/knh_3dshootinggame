@@ -7,7 +7,7 @@ public class EnemySpawner : MonoBehaviour
     public Enemy.EnemyType EnemyType;
     public Vector3 SpawnCenter;   // 스폰 중심
     public float SpawnRadius = 5f;   // 스폰 반경
-    public float SpawnInterval = 10f; // 스폰 주기
+    public float SpawnInterval = 3f; // 스폰 주기
     public Transform[] PatrolPoints; // 순찰 지점 배열
 
     public void Start()
@@ -21,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
         {
 
             // 현재 활성화된 적의 수 확인
-            int activeEnemyCount = EnemyPool.GetActiveEnemyCount();
+            int activeEnemyCount = EnemyPool.GetActiveEnemyCount(EnemyType);
 
             if (activeEnemyCount < EnemyPool.PoolSize)
             {
@@ -45,6 +45,6 @@ public class EnemySpawner : MonoBehaviour
     {
         float x = Random.Range(-SpawnRadius, SpawnRadius);
         float z = Random.Range(-SpawnRadius, SpawnRadius);
-        return SpawnCenter + new Vector3(x, 1, z);
+        return SpawnCenter + new Vector3(x, 0, z);
     }
 }

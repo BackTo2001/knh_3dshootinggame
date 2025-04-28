@@ -9,6 +9,8 @@ public class PlayerFire : MonoBehaviour
 
     // - ÆøÅº ÇÁ¸®ÆÕ
     public GameObject BombPrefab;
+
+
     // - ÆøÅº ´øÁö´Â Èû
     public float MinThrowPower = 5f;
     public float MaxThrowPower = 20f;
@@ -168,7 +170,7 @@ public class PlayerFire : MonoBehaviour
                 //}
                 if (damageable != null)
                 {
-                    Damage damage = new Damage(10, gameObject);
+                    Damage damage = new Damage(40, gameObject);
                     damageable.TakeDamage(damage); // Àû¿¡°Ô ÇÇÇØ¸¦ ÀÔÈû
                 }
             }

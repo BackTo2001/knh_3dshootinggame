@@ -9,9 +9,11 @@ public class PlayerMove : MonoBehaviour
     private float _yVelocity = 0f;        // 중력 가속도
 
     private CharacterController _characterController; // 캐릭터 컨트롤러
+    private Animator _animator;
 
     private void Awake()
     {
+        _animator = GetComponentInChildren<Animator>();
         _characterController = GetComponent<CharacterController>();
         _playerStat = GetComponent<PlayerStat>();
 
@@ -37,11 +39,16 @@ public class PlayerMove : MonoBehaviour
     public void Move()
     {
         // 1. 키보드 입력을 받는다.
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
 
         // 2. 입력으로부터 방향을 설정한다.
-        Vector3 inputDir = new Vector3(h, 0, v).normalized;
+        Vector3 inputDir = new Vector3(h, 0, v);
+        //_animator.SetLayerWeight
+        _animator.SetFloat("MoveAmount", inputDir.magnitude);
+        inputDir.Normalize(); // 방향 정규화 (길이 1로 만듦)
+
+
 
         // 2-1. 메인 카메라를 기준으로 방향을 정한다.
         Vector3 worldDir = Camera.main.transform.TransformDirection(inputDir);
