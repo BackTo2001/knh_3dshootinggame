@@ -7,6 +7,7 @@ public class MinimapCamera : MonoBehaviour
 
     private void Update()
     {
+
         // alt키를 누르면 마우스 visible
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {

@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI BombText;
     public TextMeshProUGUI BulletText;
     public TextMeshProUGUI ReloadText;
+    public TextMeshProUGUI CenterText;
     public Button ZoomInButton;
     public Button ZoomOutButton;
 
@@ -55,6 +56,32 @@ public class UIManager : MonoBehaviour
         if (ZoomInButton != null) ZoomInButton.onClick.AddListener(ZoomIn);
         if (ZoomOutButton != null) ZoomOutButton.onClick.AddListener(ZoomOut);
     }
+
+    public IEnumerator ShowReady()
+    {
+        if (CenterText != null)
+        {
+            // Ready
+            CenterText.text = "Ready";
+            CenterText.gameObject.SetActive(true);
+            yield return new WaitForSeconds(3f);
+            // Go
+            CenterText.text = "Go!";
+            yield return new WaitForSeconds(1f);
+            CenterText.gameObject.SetActive(false);
+            // GameOver
+        }
+    }
+
+    public void ShowGameOver()
+    {
+        if (CenterText != null)
+        {
+            CenterText.text = "GameOver";
+            CenterText.gameObject.SetActive(true);
+        }
+    }
+
 
     private void Update()
     {
@@ -178,33 +205,4 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // 코루틴으로 수정한 Ready/Run/Over UI 함수들
-    public IEnumerator ShowReadyUI()
-    {
-        ToggleMainUI(false);
-        Debug.Log("Ready UI is now active.");
-        yield return null;
-    }
-
-    public IEnumerator ShowRunUI()
-    {
-        ToggleMainUI(true);
-        Debug.Log("Run UI is now active.");
-        yield return null;
-    }
-
-    public IEnumerator ShowOverUI()
-    {
-        ToggleMainUI(false);
-        Debug.Log("Over UI is now active.");
-        yield return null;
-    }
-
-    private void ToggleMainUI(bool isActive)
-    {
-        if (HealthSlider != null) HealthSlider.gameObject.SetActive(isActive);
-        if (StaminaSlider != null) StaminaSlider.gameObject.SetActive(isActive);
-        if (BombText != null) BombText.gameObject.SetActive(isActive);
-        if (BulletText != null) BulletText.gameObject.SetActive(isActive);
-    }
 }

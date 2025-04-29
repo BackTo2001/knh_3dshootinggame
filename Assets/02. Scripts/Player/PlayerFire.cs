@@ -43,6 +43,14 @@ public class PlayerFire : MonoBehaviour
     // 목표 : 마우스의 왼쪽 버튼을 누르면 카메라가 바라보는 방향으로 총을 발사하고 싶다.
     public ParticleSystem BulletEffect;
 
+    public GameObject UI_SniperZoom;
+    private bool _zoomMode = false;
+
+    public GameObject UI_Crosshair;
+    public float ZoomInSize = 15f;
+    public float ZoomOutSize = 60f;
+
+
     private void Start()
     {
 
@@ -56,6 +64,22 @@ public class PlayerFire : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            _zoomMode = !_zoomMode;
+            if (_zoomMode)
+            {
+                UI_Crosshair.SetActive(true);
+                UI_SniperZoom.SetActive(true);
+                Camera.main.fieldOfView = ZoomInSize;
+            }
+            else
+            {
+                UI_SniperZoom.SetActive(false);
+                Camera.main.fieldOfView = ZoomOutSize;
+            }
+        }
+
         // 폭탄 사용
         if (Input.GetMouseButton(1))
         {
@@ -66,7 +90,6 @@ public class PlayerFire : MonoBehaviour
             float normalizedPower = _holdTime / MaxHoldTime;
             UIManager.Instance.UpdateBombThrowPower(normalizedPower);
             UIManager.Instance.ShowBombThrowSlider(true); // Slider 표시
-
         }
         if (Input.GetMouseButtonUp(1))
         {
@@ -106,6 +129,9 @@ public class PlayerFire : MonoBehaviour
         // Ray : 레이저(시작위치, 방향)
         // Raycast : 레이저를 발사
         // RaycastHit : 레이저가 물체와 부딪혔다면 그 정보를 저장하는 구조체
+
+
+
     }
 
     public void ThrowBomb()

@@ -20,6 +20,7 @@ public class CameraManager : MonoBehaviour
 
     private void Update()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         HandleCamera();
         UpdateCameraPosition();
     }

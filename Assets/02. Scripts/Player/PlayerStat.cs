@@ -44,10 +44,10 @@ public class PlayerStat : MonoBehaviour
         CurrentHealth = Mathf.Max(CurrentHealth - amount, 0f);
     }
 
-    public void RecoverHealth(float amount)
-    {
-        CurrentHealth = Mathf.Min(CurrentHealth + amount, _data.MaxHealth);
-    }
+    //public void RecoverHealth(float amount)
+    //{
+    //    CurrentHealth = Mathf.Min(CurrentHealth + amount, _data.MaxHealth);
+    //}
 
     public bool IsDead => CurrentHealth <= 0f;
 

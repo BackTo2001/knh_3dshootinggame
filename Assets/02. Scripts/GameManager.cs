@@ -6,39 +6,31 @@ public class GameManager : MonoBehaviour
     public enum GameState { Ready, Run, Over }
     public GameState CurrentState { get; private set; }
 
-    [SerializeField] private UIManager _uiManager;   // UIManager 참조
-    [SerializeField] private PlayerStat _playerStat; // PlayerStat 참조
-
-    private Player _player; // 플레이어 캐싱
+    [SerializeField] private Player player; // Player 참조를 위한 필드
 
     private void Start()
     {
-        _player = FindObjectOfType<Player>();
         StartCoroutine(GameFlow());
     }
 
     private IEnumerator GameFlow()
     {
-        // Ready 상태
+        // Ready
         SetGameState(GameState.Ready);
-        yield return StartCoroutine(_uiManager.ShowReadyUI());
-        yield return new WaitForSeconds(2f);
+        yield return UIManager.Instance.ShowReady();
 
-        // Run 상태
-        SetGameState(GameState.Run);
-        yield return StartCoroutine(_uiManager.ShowRunUI());
+        // Run
+        CurrentState = GameState.Run;
 
-        // 게임 진행
+        // Over
         while (!IsGameOver())
         {
             yield return null;
         }
 
-        // Over 상태
         SetGameState(GameState.Over);
-        yield return StartCoroutine(_uiManager.ShowOverUI());
+        UIManager.Instance.ShowGameOver();
     }
-
     private void SetGameState(GameState newState)
     {
         CurrentState = newState;
@@ -46,27 +38,26 @@ public class GameManager : MonoBehaviour
         switch (newState)
         {
             case GameState.Ready:
-                LockCursor(true);
+            case GameState.Over:
+                Time.timeScale = 0f; // 게임 정지
+                if (player != null)
+                {
+                    //player.EnableInput(false); // 플레이어 입력 비활성화
+                }
                 break;
 
             case GameState.Run:
-                LockCursor(true);
-                break;
-
-            case GameState.Over:
-                LockCursor(false); // 오버 상태에서는 마우스 풀어주기
+                Time.timeScale = 1f; // 게임 재개
+                if (player != null)
+                {
+                    //player.EnableInput(true); // 플레이어 입력 활성화
+                }
                 break;
         }
     }
-
-    private void LockCursor(bool isLock)
-    {
-        Cursor.lockState = isLock ? CursorLockMode.Locked : CursorLockMode.None;
-        Cursor.visible = !isLock;
-    }
-
     private bool IsGameOver()
     {
-        return _player == null || _playerStat.IsDead;
+        // TODO: 실제 게임 오버 조건 검사
+        return player == null || player.GetComponent<PlayerStat>().CurrentHealth <= 0;
     }
 }
