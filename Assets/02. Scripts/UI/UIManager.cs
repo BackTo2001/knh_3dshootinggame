@@ -64,10 +64,10 @@ public class UIManager : MonoBehaviour
             // Ready
             CenterText.text = "Ready";
             CenterText.gameObject.SetActive(true);
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSecondsRealtime(3f);
             // Go
             CenterText.text = "Go!";
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSecondsRealtime(1f); // 실시간 3초 대기
             CenterText.gameObject.SetActive(false);
             // GameOver
         }
