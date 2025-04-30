@@ -32,6 +32,7 @@ public class EnemySpawner : MonoBehaviour
                 Enemy enemy = EnemyPool.GetFromPool(EnemyType, randomPosition);
                 if (enemy != null)
                 {
+                    enemy.Initialize(); // 적 초기화
                     enemy.PatrolPoints = PatrolPoints; // 순찰 지점 설정
                     enemy.gameObject.SetActive(true);
                 }

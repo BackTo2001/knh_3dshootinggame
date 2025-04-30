@@ -68,19 +68,17 @@ public class Enemy : MonoBehaviour, IDamageable
         _characterController = GetComponent<CharacterController>();
         //_animator = GetComponentInChildren<Animator>();
         _player = GameObject.FindGameObjectWithTag("Player");
-
-        currentHealth = maxHealth;
-
-        // 초기 체력 설정
-        if (healthBar != null)
-        {
-            healthBar.SetHealth(currentHealth, maxHealth);
-        }
     }
     public void Initialize()
     {
         // 적의 초기 상태 설정
         Health = 100; // 체력 초기화
+        currentHealth = maxHealth;
+        // 초기 체력 설정
+        if (healthBar != null)
+        {
+            healthBar.SetHealth(currentHealth, maxHealth);
+        }
         CurrentState = EnemyState.Idle; // 기본 상태로 설정
         _idleTimer = 0f; // 타이머 초기화
         _currentPatrolIndex = 0; // 순찰 인덱스 초기화
