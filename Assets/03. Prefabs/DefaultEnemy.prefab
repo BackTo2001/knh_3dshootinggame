@@ -118,6 +118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8734908617603365795}
   - component: {fileID: 1955141488006984810}
+  - component: {fileID: 5785004646699403193}
   m_Layer: 7
   m_Name: Slider
   m_TagString: Untagged
@@ -197,6 +198,19 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5785004646699403193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456425228064884291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 297f5abbad23d3f46b6f7f6339f242e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthSlider: {fileID: 1955141488006984810}
 --- !u!1 &1444957396552511503
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +462,6 @@ GameObject:
   - component: {fileID: 5217196836984361715}
   - component: {fileID: 282078818459396700}
   - component: {fileID: 3305304697863990110}
-  - component: {fileID: 5183207282013577542}
   m_Layer: 7
   m_Name: DefaultEnemy
   m_TagString: Enemy
@@ -584,7 +597,7 @@ MonoBehaviour:
   - {fileID: 0}
   IdleToPatrolTime: 5
   maxHealth: 100
-  healthBar: {fileID: 5183207282013577542}
+  healthBar: {fileID: 5785004646699403193}
 --- !u!195 &3305304697863990110
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -607,19 +620,6 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5183207282013577542
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3926205101177864754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 297f5abbad23d3f46b6f7f6339f242e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthSlider: {fileID: 1955141488006984810}
 --- !u!1 &4889945706432975222
 GameObject:
   m_ObjectHideFlags: 0

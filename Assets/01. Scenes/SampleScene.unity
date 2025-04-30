@@ -8154,18 +8154,6 @@ PrefabInstance:
       propertyPath: 'PatrolPoints.Array.data[2]'
       value: 
       objectReference: {fileID: 1515237638}
-    - target: {fileID: 818420156008395196, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 818420156008395196, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1557389372024714787, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1605060400545734534, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10
@@ -8209,34 +8197,6 @@ PrefabInstance:
     - target: {fileID: 3926205101177864754, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
       propertyPath: m_Name
       value: DefaultEnemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 4152207581533167727, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4152207581533167727, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4152207581533167727, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5161148515311862463, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5300081701819806711, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6315079149532840861, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6315079149532840861, guid: 22e337f522f33194c9a4ad24f24dee6e, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
