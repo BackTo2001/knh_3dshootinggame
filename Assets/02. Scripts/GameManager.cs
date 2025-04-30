@@ -17,13 +17,11 @@ public class GameManager : MonoBehaviour
     {
         // Ready
         SetGameState(GameState.Ready);
-        Debug.Log("GameState: Ready");
         yield return UIManager.Instance.ShowReady();
 
         // Run
         CurrentState = GameState.Run;
         SetGameState(GameState.Run);
-        Debug.Log("GameState: Run");
 
         // Over
         while (!IsGameOver())
@@ -32,7 +30,6 @@ public class GameManager : MonoBehaviour
         }
 
         SetGameState(GameState.Over);
-        Debug.Log("GameState: Over");
         UIManager.Instance.ShowGameOver();
     }
     private void SetGameState(GameState newState)
@@ -43,16 +40,13 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Ready:
             case GameState.Over:
-                Debug.Log("(Time.timeScale = 0)");
                 Time.timeScale = 0f; // 게임 정지
                 break;
 
             case GameState.Run:
-                Debug.Log("게임 실행 상태 (Time.timeScale = 1)");
                 Time.timeScale = 1f; // 게임 재개
                 break;
         }
-        Debug.Log($"[SetGameState] Time.timeScale: {Time.timeScale}");
     }
     private bool IsGameOver()
     {

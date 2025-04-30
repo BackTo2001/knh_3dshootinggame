@@ -10,7 +10,6 @@ public class PlayerFire : MonoBehaviour
     // - ÆøÅº ÇÁ¸®ÆÕ
     public GameObject BombPrefab;
 
-
     // - ÆøÅº ´øÁö´Â Èû
     public float MinThrowPower = 5f;
     public float MaxThrowPower = 20f;
@@ -53,7 +52,6 @@ public class PlayerFire : MonoBehaviour
 
     private void Start()
     {
-
         //BombPool.Instance.SetPoolSize(MaxBombCount);
 
         //_fireTimer = FireInterval;
@@ -64,7 +62,7 @@ public class PlayerFire : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Alpha1))
+        if (Input.GetKey(KeyCode.Alpha7))
         {
             _zoomMode = !_zoomMode;
             if (_zoomMode)
@@ -190,10 +188,6 @@ public class PlayerFire : MonoBehaviour
                 BulletEffect.Play();
 
                 IDamageable damageable = hitInfo.collider.GetComponent<IDamageable>();
-                //if(hitInfo.collider.TryGetComponent<IDamageable>(out damageable))
-                //{
-
-                //}
                 if (damageable != null)
                 {
                     Damage damage = new Damage(40, gameObject);

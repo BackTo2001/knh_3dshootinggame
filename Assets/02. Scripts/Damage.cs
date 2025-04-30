@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Damage : MonoBehaviour
+public class Damage
 {
     public int Value;                   // 피해량
     public GameObject From;             // 피해를 준 객체
