@@ -45,7 +45,7 @@ public class PlayerMove : MonoBehaviour
         // 2. 입력으로부터 방향을 설정한다.
         Vector3 inputDir = new Vector3(h, 0, v);
         //_animator.SetLayerWeight
-        _animator.SetFloat("MoveAmount", inputDir.magnitude);
+        //_animator.SetFloat("MoveAmount", inputDir.magnitude);
         inputDir.Normalize(); // 방향 정규화 (길이 1로 만듦)
 
 
