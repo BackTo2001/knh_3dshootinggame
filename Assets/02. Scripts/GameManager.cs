@@ -3,10 +3,29 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public enum GameState { Ready, Run, Over }
+    private static GameManager _instance;
+
+    public static GameManager Instance => _instance;
+
+    public UI_OptionPopup OptionPopup;
+
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public enum GameState { Ready, Run, Pause, Over }
     public GameState CurrentState { get; private set; }
 
-    [SerializeField] private Player player; // Player 참조를 위한 필드
+    [SerializeField] private Player player;
 
     private void Start()
     {
@@ -40,6 +59,7 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Ready:
             case GameState.Over:
+            case GameState.Pause:
                 Time.timeScale = 0f; // 게임 정지
                 break;
 
@@ -50,7 +70,29 @@ public class GameManager : MonoBehaviour
     }
     private bool IsGameOver()
     {
-        // TODO: 실제 게임 오버 조건 검사
+        // 실제 게임 오버 조건 검사
         return player == null || player.GetComponent<PlayerStat>().CurrentHealth <= 0;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Pause();
+        }
+    }
+
+    public void Pause()
+    {
+        if (CurrentState == GameState.Run)
+        {
+            SetGameState(GameState.Pause);
+            OptionPopup.Open();
+        }
+        else if (CurrentState == GameState.Pause)
+        {
+            SetGameState(GameState.Run);
+            OptionPopup.Close();
+        }
     }
 }
