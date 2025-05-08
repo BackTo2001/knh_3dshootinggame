@@ -18,9 +18,14 @@ public class CameraManager : MonoBehaviour
 
     private CameraMode _cameramode = CameraMode.FPS;
 
-    private void Update()
+
+    private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void Update()
+    {
         HandleCamera();
         UpdateCameraPosition();
     }
