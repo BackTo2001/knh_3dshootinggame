@@ -29,6 +29,7 @@ public class UI_LoginScene : MonoBehaviour
     [Header("회원가입")]
     public UI_InputFields RegisterInputFields;
 
+    private const string PREFIX = "ID_";
     private const string SALT = "1028038";
 
     // 게임 시작하면 로그인 패널
@@ -36,6 +37,8 @@ public class UI_LoginScene : MonoBehaviour
     {
         LoginPanel.SetActive(true);
         RegisterPanel.SetActive(false);
+
+        LoginCheck();
     }
 
     // 회원가입 버튼 클릭
@@ -84,15 +87,10 @@ public class UI_LoginScene : MonoBehaviour
         }
 
         // 4. PlayerPrefs를 이용해서 아이디와 비밀번호를 저장한다.
-        //PlayerPrefs.SetString("ID", id);
-        //PlayerPrefs.SetString("Password", password);
-        //PlayerPrefs.Save();
-        PlayerPrefs.SetString(id, Encryption(password + SALT));
+        PlayerPrefs.SetString(PREFIX + id, Encryption(password + SALT));
 
         // 5. 로그인 창으로 돌아간다. (이때, 아이디는 자동 입력되어 있다.)
         OnClickGotoLoginButton();
-        //LoginInputFields.IDInputField.text = id;
-        //LoginInputFields.ResultText.text = "회원가입이 완료되었습니다.";
     }
 
     public string Encryption(string text)
@@ -115,5 +113,51 @@ public class UI_LoginScene : MonoBehaviour
 
         return resultText;
 
+    }
+
+    public void Login()
+    {
+        // 1. 아이디 입력을 확인한다.
+        string id = LoginInputFields.IDInputField.text;
+        if (string.IsNullOrEmpty(id))
+        {
+            LoginInputFields.ResultText.text = "아이디를 입력하세요.";
+            return;
+        }
+
+        // 2. 비밀번호 입력을 확인한다.
+        string password = LoginInputFields.PasswordInputField.text;
+        if (string.IsNullOrEmpty(password))
+        {
+            LoginInputFields.ResultText.text = "비밀번호를 입력하세요.";
+            return;
+        }
+
+        // 3. PlayerPrefs에서 아이디와 비밀번호를 가져온다.
+        if (!PlayerPrefs.HasKey(PREFIX + id))
+        {
+            LoginInputFields.ResultText.text = "아이디와 비밀번호를 확인해주세요.";
+            return;
+        }
+
+        string hashedPassword = PlayerPrefs.GetString(PREFIX + id);
+        if (hashedPassword != Encryption(password + SALT))
+        {
+            LoginInputFields.ResultText.text = "아이디와 비밀번호를 확인해주세요.";
+            return;
+        }
+
+        // 4. 맞다면 로그인
+        Debug.Log("로그인 성공");
+
+    }
+
+    // 아이디와 비밀번호 InputField 값이 바뀌었을 경우에만 호출
+    public void LoginCheck()
+    {
+        string id = LoginInputFields.IDInputField.text;
+        string password = LoginInputFields.PasswordInputField.text;
+
+        LoginInputFields.ConfirmButton.enabled = !string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(password);
     }
 }
