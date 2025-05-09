@@ -77,7 +77,7 @@ public class UIManager : MonoBehaviour
     {
         if (CenterText != null)
         {
-            CenterText.text = "GameOver";
+            CenterText.text = "SeeYou\r\nNextTime";
             CenterText.gameObject.SetActive(true);
         }
     }

@@ -14,7 +14,6 @@ public class PlayerRotate : MonoBehaviour
 
         _rotationX += mouseX * RotationSpeed * Time.deltaTime;
         //_rotationX = Mathf.Clamp(_rotationX, -90f, 90f); // 회전 각도 제한
-        _rotationY += mouseY * RotationSpeed * Time.deltaTime;
 
         transform.eulerAngles = new Vector3(-_rotationY, _rotationX, 0);
         //transform.localEulerAngles = new Vector3(-_rotationY, _rotationX, 0);
