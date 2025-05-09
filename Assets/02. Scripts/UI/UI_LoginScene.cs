@@ -1,8 +1,10 @@
+using DG.Tweening;
 using System;
 using System.Security.Cryptography;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [Serializable]
@@ -149,6 +151,8 @@ public class UI_LoginScene : MonoBehaviour
 
         // 4. 맞다면 로그인
         Debug.Log("로그인 성공");
+        DOTween.KillAll();
+        SceneManager.LoadScene(1);
 
     }
 
