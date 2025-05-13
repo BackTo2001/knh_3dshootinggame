@@ -39,16 +39,17 @@ public class CameraRotate : MonoBehaviour
 
     private void HandleFPSRotation()
     {
+        //// 1. 마우스 입력을 받는다.(마우스의 커서의 움직임 방향)
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
 
-        // FPS 모드: 카메라가 플레이어의 시점에서 자유롭게 회전
-        float mouseX = Input.GetAxis("Mouse X") * RotationSpeed * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * RotationSpeed * Time.deltaTime;
+        // 2. 회전한 양만큼 누적시켜 나간다. 
+        _rotationX += mouseX * RotationSpeed * Time.deltaTime;
+        _rotationY += -mouseY * RotationSpeed * Time.deltaTime;
+        _rotationY = Mathf.Clamp(_rotationY, -90f, 90f);
 
-        _rotationY -= mouseY;
-        //_rotationY = Mathf.Clamp(_rotationY, -90f, 90f);
-
-        _cameraTransform.localRotation = Quaternion.Euler(_rotationY, 0f, 0f);   // 카메라는 X축으로만
-        _playerBody.Rotate(Vector3.up * mouseX);
+        // 3. 회전 방향으로 회전시킨다.
+        transform.eulerAngles = new Vector3(_rotationY, _rotationX, 0);
     }
 
     private void HandleTPSRotation()

@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI CenterText;
     public Button ZoomInButton;
     public Button ZoomOutButton;
+    [SerializeField] private GameObject Crosshair;
 
     private const float MinZoom = 5f;
     private const float MaxZoom = 15f;
@@ -202,6 +203,14 @@ public class UIManager : MonoBehaviour
         if (_minimapCamera != null)
         {
             _minimapCamera.orthographicSize = Mathf.Min(_minimapCamera.orthographicSize + ZoomStep, MaxZoom);
+        }
+    }
+
+    public void SetCrosshairVisible(bool isVisible)
+    {
+        if (Crosshair != null)
+        {
+            Crosshair.SetActive(isVisible);
         }
     }
 

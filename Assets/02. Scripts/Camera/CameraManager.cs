@@ -52,12 +52,10 @@ public class CameraManager : MonoBehaviour
         {
             case CameraMode.FPS:
                 transform.position = _fps.position;
-                transform.rotation = _fps.rotation;
                 break;
 
             case CameraMode.TPS:
                 transform.position = _tps.position;
-                transform.rotation = Quaternion.Euler(15f, _targetTransform.eulerAngles.y, 0f);
                 break;
 
             case CameraMode.QuarterView:
